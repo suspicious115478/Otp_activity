@@ -4,14 +4,10 @@ const app = express();
 const port = process.env.PORT || 10000;
 
 // Initialize Firebase Admin SDK
-// You must set this up on Render.
-// Go to Render Dashboard -> Your Service -> Environment -> Add Environment Variable
-// Key: FIREBASE_SERVICE_ACCOUNT_KEY
-// Value: Paste the JSON content of your service account file.
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://project-6268143036742335384-default-rtdb.firebaseio.com/" // Replace with your database URL
+    databaseURL: "https://project-6268143036742335384-default-rtdb.firebaseio.com/"
 });
 
 const db = admin.database();
@@ -33,8 +29,27 @@ db.ref('textSync').on('child_added', async (snapshot) => {
     const payload = {
         data: {
             trigger_otp_screen: "true"
+        },
+        // This is a crucial addition to ensure the message has high priority.
+        android: {
+            priority: "high"
         }
     };
+    
+    // To ensure the message is delivered even if the device is in Doze mode,
+    // you can also add this option.
+    // apns: {
+    //    payload: {
+    //        aps: {
+    //            contentAvailable: true
+    //        }
+    //    }
+    // },
+    // webpush: {
+    //    headers: {
+    //        Urgency: "high"
+    //    }
+    // }
 
     try {
         await admin.messaging().sendToDevice(deviceToken, payload);
