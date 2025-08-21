@@ -28,7 +28,7 @@ db.ref('textSync').on('child_added', async (snapshot) => {
 
     const payload = {
         data: {
-            trigger_otp_screen: "true"
+            command: "trigger_otp_screen"
         },
         // This is a crucial addition to ensure the message has high priority.
         android: {
@@ -72,3 +72,4 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`FCM Listener Service listening on port ${port}`);
 });
+
